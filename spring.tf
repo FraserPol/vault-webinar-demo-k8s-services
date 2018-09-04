@@ -1,6 +1,7 @@
 resource "kubernetes_replication_controller" "spring-frontend" {
   metadata {
     name = "spring-frontend"
+
     labels {
       App = "spring-frontend"
     }
@@ -8,68 +9,83 @@ resource "kubernetes_replication_controller" "spring-frontend" {
 
   spec {
     replicas = "${var.instance_count}"
+
     selector {
       App = "spring-frontend"
     }
+
     template {
-    service_account_name = "${kubernetes_service_account.spring.metadata.0.name}"
-    container {
-        image = "${var.spring_docker_container}"
+      service_account_name = "${kubernetes_service_account.spring.metadata.0.name}"
+
+      container {
+        image             = "${var.spring_docker_container}"
         image_pull_policy = "Always"
-        name = "spring"
+        name              = "spring"
+
         volume_mount {
-            mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
-            name = "${kubernetes_service_account.spring.default_secret_name}"
+          mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
+          name       = "${kubernetes_service_account.spring.default_secret_name}"
         }
+
         volume_mount {
-            mount_path = "/bootstrap.yaml"
-            sub_path = "bootstrap.yaml"
-            name = "${kubernetes_config_map.spring.metadata.0.name}"
+          mount_path = "/bootstrap.yaml"
+          sub_path   = "bootstrap.yaml"
+          name       = "${kubernetes_config_map.spring.metadata.0.name}"
         }
+
         port {
-            container_port = 8080
+          container_port = 8080
         }
-    }
-    volume {
+      }
+
+      volume {
         name = "${kubernetes_service_account.spring.default_secret_name}"
+
         secret {
-            secret_name = "${kubernetes_service_account.spring.default_secret_name}"
+          secret_name = "${kubernetes_service_account.spring.default_secret_name}"
         }
-    }
-    volume {
+      }
+
+      volume {
         name = "${kubernetes_config_map.spring.metadata.0.name}"
+
         config_map {
-            name = "spring"
-            items {
-                key = "config"
-                path =  "bootstrap.yaml"
-            }
+          name = "spring"
+
+          items {
+            key  = "config"
+            path = "bootstrap.yaml"
+          }
         }
-    }
+      }
     }
   }
 }
 
 resource "kubernetes_service" "spring-frontend" {
-    metadata {
-        name = "spring-frontend"
+  metadata {
+    name = "spring-frontend"
+  }
+
+  spec {
+    selector {
+      App = "${kubernetes_replication_controller.spring-frontend.metadata.0.labels.App}"
     }
-    spec {
-        selector {
-            App = "${kubernetes_replication_controller.spring-frontend.metadata.0.labels.App}"
-        }
-        port {
-            port = 8080
-            target_port = 8080
-        }
-        type = "LoadBalancer"
+
+    port {
+      port        = 8080
+      target_port = 8080
     }
+
+    type = "LoadBalancer"
+  }
 }
 
 resource "kubernetes_config_map" "spring" {
   metadata {
     name = "spring"
   }
+
   data {
     config = <<EOF
 ---

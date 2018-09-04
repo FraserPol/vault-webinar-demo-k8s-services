@@ -16,54 +16,54 @@ variable "k8s_master_auth_cluster_ca_certificate" {
 
 variable "instance_count" {
   default = 0
- }
+}
 
 variable "vault_host" {
   description = "vault_server"
-  default = "localhost"
+  default     = "localhost"
 }
 
 variable "vault_port" {
   description = "vault_port"
-  default = "8200"
+  default     = "8200"
 }
 
 variable "vault_scheme" {
   description = "scheme"
-  default = "http"
+  default     = "http"
 }
 
 variable "vault_role" {
   description = "vault_role"
-  default = "order"
+  default     = "order"
 }
 
 variable "postgres_host" {
   description = "postgres_server"
-  default = "localhost"
+  default     = "localhost"
 }
 
 variable "postgres_port" {
   description = "postgres_port"
-  default = "5432"
+  default     = "5432"
 }
 
 variable "postgres_instance" {
   description = "postgres_instance"
-  default = "postgres"
+  default     = "postgres"
 }
 
 variable "postgres_role" {
   description = "postgres_role"
-  default = "database/creds/order"
+  default     = "database/creds/order"
 }
 
 variable "spring_docker_container" {
   description = "spring_docker_container"
-  default = "lanceplarsen/spring-vault-demo"
+  default     = "lanceplarsen/spring-vault-demo"
 }
 
 variable "go_docker_container" {
   description = "go_docker_container"
-  default = "lanceplarsen/go-vault-demo"
+  default     = "lanceplarsen/go-vault-demo"
 }
